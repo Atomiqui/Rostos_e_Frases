@@ -4,14 +4,14 @@ _Projeto que, ao identificar um rosto, mostra frases com base na sua posição._
 ## Objetivo:
 Criar um programa que:
 * Ao identificar um rosto, mostre frases;
-    * aleatórias?
+   * aleatórias?
 * Manter a frase alinhada ao rosto identificada (na parte superior);
-    * Redimensionar a frase quando o rosto de afastar.
+   * Redimensionar a frase quando o rosto de afastar.
 * Mudar a frase quando o rosto de aproximar e se afastar;
 * Capturar o rosto (após a permissão) e construir um mosaico de rostos;
-    * Com ou sem frases?
-    * Redimensionar o mosaico a cada rosto inserido ou preencher um de tamanho fixo?
-    * Repetir rostos?
+   * Com ou sem frases?
+   * Redimensionar o mosaico a cada rosto inserido ou preencher um de tamanho fixo?
+   * * Repetir rostos?
 
 ## Andamento:
 
