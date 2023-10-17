@@ -37,9 +37,9 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * ~~Usar o Face detection ao invés do Face Landmark;~~
     * será usado o Face Landmark pela distância que mantêm o rosto identificado.
 * ~~Fixar as frases no rosto identificado;~~
-* Arrumar a velocidade das frases;
+* ~~Arrumar a velocidade das frases;~~
 * ~~Arrumar a posição das frases;~~
 * ~~Arrumar a direção das frases;~~
 * Desenvolver o redimensionamento das frases com o deslocamento do rosto em Z (aumentar quando se afastar para conseguir ler);
-* Mudar a frase com o deslocamento em Z;
+* ~~Mudar a frase com o deslocamento em Z;~~
 * Fazer um mosaico com os rostos;
