@@ -45,6 +45,11 @@ def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont
 
     # Salve a área recortada do rosto como uma imagem separada
     if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
+        image_folder = "images"
+
+        if not os.path.exists(image_folder):
+            os.makedirs(image_folder)
+            
         cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
         return cont + 1
     
