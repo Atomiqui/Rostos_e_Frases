@@ -102,3 +102,26 @@ def make_mosaico(output_file="mosaico.png", mosaic_size=(1024, 1024), images = [
     # print(f"Mosaico gerado e salvo em {output_file}")
 
     return images, resized_images
+
+def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):
+    mp_drawing.draw_landmarks(
+        image=image,
+        landmark_list=face_landmarks,
+        connections=mp_face_mesh.FACEMESH_TESSELATION,
+        landmark_drawing_spec=None,
+        connection_drawing_spec=mp_drawing_styles
+        .get_default_face_mesh_tesselation_style())
+    mp_drawing.draw_landmarks(
+        image=image,
+        landmark_list=face_landmarks,
+        connections=mp_face_mesh.FACEMESH_CONTOURS,
+        landmark_drawing_spec=None,
+        connection_drawing_spec=mp_drawing_styles
+        .get_default_face_mesh_contours_style())
+    mp_drawing.draw_landmarks(
+        image=image,
+        landmark_list=face_landmarks,
+        connections=mp_face_mesh.FACEMESH_IRISES,
+        landmark_drawing_spec=None,         
+        connection_drawing_spec=mp_drawing_styles
+        .get_default_face_mesh_iris_connections_style())

@@ -3,8 +3,9 @@ import mediapipe as mp
 import random
 import Functionalities as func
 
-# mp_drawing = mp.solutions.drawing_utils
+mp_drawing = mp.solutions.drawing_utils
 mp_face_mesh = mp.solutions.face_mesh
+mp_drawing_styles = mp.solutions.drawing_styles
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 4096)  # Largura da captura
@@ -23,6 +24,8 @@ images = []
 resized_image = []
 
 with mp_face_mesh.FaceMesh(
+    max_num_faces=3,
+    refine_landmarks=True,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as face_mesh:
 
@@ -44,21 +47,23 @@ with mp_face_mesh.FaceMesh(
         image.flags.writeable = True
 
         if results.multi_face_landmarks:
+            image_copy = image.copy()
+
             for face_landmarks in results.multi_face_landmarks:
-                image_copy = image.copy()
+                distance, x_forehead, y_forehead, x_chin, y_chin = func.get_positions(face_landmarks, image)
 
                 if face_detected:
                     i = random.randint(0, 2)
                     face_detected = False
 
-                distance, x_forehead, y_forehead, x_chin, y_chin = func.get_positions(face_landmarks, image)
-
                 frase = func.get_text(distance, i, marca_prox, marca_dist)
 
                 x, y = func.set_text_position(x_forehead, y_forehead, frase)
                 
+                func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks)
+
                 cv2.putText(image, frase, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, "Se você aceita o uso da sua imagem para nosso Mosaico, pressione espaço!", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(image, "Se você aceita o uso da sua imagem para nosso Mosaico, pressione espaço!", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)            
         else:
             face_detected = True
 

@@ -43,3 +43,8 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * Desenvolver o redimensionamento das frases com o deslocamento do rosto em Z (aumentar quando se afastar para conseguir ler);
 * ~~Mudar a frase com o deslocamento em Z;~~
 * Fazer um mosaico com os rostos;
+* O rosto precisa ser salvo automaticamente;
+* novo programa para gerar o mosaico
+* mudar a cor da frase (semaforo)
+* aumentar o tamanho da frase quando se afastar
+* 
