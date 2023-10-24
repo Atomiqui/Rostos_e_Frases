@@ -21,24 +21,35 @@ def set_text_position(x_forehead, y_forehead, frase):
 
     return x, y
 
-def get_text(distance, i, marca_prox, marca_dist):
-
-    frases = [
+def get_text_and_color(distance, i, marca_prox, marca_dist):
+    colors = [(0, 255, 0), (0, 255, 255), (0, 0, 255)]  # Verde, Amarelo, Vermelho
+    phrases = [
         ['frase11', 'frase12', 'frase13'],
         ['frase21', 'frase22', 'frase23'],
-        ['frase31', 'frase32', 'frase33']
+        ['frase31', 'frase32', 'frase33'],
+        ['frase41', 'frase42', 'frase43'],
+        ['frase51', 'frase52', 'frase53'],
+        ['frase61', 'frase62', 'frase63'],
+        ['frase71', 'frase72', 'frase73'],
+        ['frase81', 'frase82', 'frase83'],
+        ['frase91', 'frase92', 'frase93'],
+        ['frase101', 'frase102', 'frase103'],
     ]
 
     if distance > marca_prox:
-        frase = frases[i][0]
+        phrase = phrases[i][0]
+        color = colors[0]  # Verde
     elif distance < marca_prox and distance > marca_dist:
-        frase = frases[i][1]
+        phrase = phrases[i][1]
+        color = colors[1]  # Amarelo
     elif distance < marca_dist:
-        frase = frases[i][2]
+        phrase = phrases[i][2]
+        color = colors[2]  # Vermelho
 
-    return frase
+    return phrase, color
 
-def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
+
+def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont=0):
     x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
     x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
     face_roi = image_copy[y1:y2, x1:x2]
@@ -51,6 +62,7 @@ def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont
             os.makedirs(image_folder)
             
         cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
+
         return cont + 1
     
 def make_mosaico(output_file="mosaico.png", mosaic_size=(1024, 1024), images = [], resized_images = []):

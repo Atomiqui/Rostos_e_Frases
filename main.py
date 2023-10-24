@@ -16,12 +16,13 @@ marca_prox = 120
 marca_dist = 70
 
 i = random.randint(0, 2)
-face_detected = True
+face_detected = False
 image_folder = "images"
 image_copy = None
 cont = 0
 images = []
 resized_image = []
+face_info = [None, None, None]
 
 with mp_face_mesh.FaceMesh(
     max_num_faces=3,
@@ -49,32 +50,60 @@ with mp_face_mesh.FaceMesh(
         if results.multi_face_landmarks:
             image_copy = image.copy()
 
-            for face_landmarks in results.multi_face_landmarks:
+            resultados = []
+
+            for i in reversed(results.multi_face_landmarks):
+                resultados.append(i)
+
+            
+            for idx, face_landmarks in enumerate(resultados):
                 distance, x_forehead, y_forehead, x_chin, y_chin = func.get_positions(face_landmarks, image)
 
+                if face_info[idx] == None:
+                    i = random.randint(0, 9)
+                    face_detected = True
+                else:
+                    i = face_info[idx]['i']
+                
+                frase, color = func.get_text_and_color(distance, i, marca_prox, marca_dist)
+                x, y = func.set_text_position(x_forehead, y_forehead, frase)
+
+                # Armazene as informações do rosto atual
+                face_info[idx] = {
+                    'distance': distance,
+                    'x_forehead': x_forehead,
+                    'y_forehead': y_forehead,
+                    'x_chin': x_chin,
+                    'y_chin': y_chin,
+                    'frase': frase,
+                    'color': color,
+                    'x_text': x,
+                    'y_text': y,
+                    'i': i,
+                    'landmarks': face_landmarks
+                }
+
                 if face_detected:
-                    i = random.randint(0, 2)
+                    cont = func.get_rosto(face_info[idx]['distance'], face_info[idx]['x_forehead'], face_info[idx]['y_forehead'], face_info[idx]['x_chin'], face_info[idx]['y_chin'], image_copy, cont)
                     face_detected = False
 
-                frase = func.get_text(distance, i, marca_prox, marca_dist)
-
-                x, y = func.set_text_position(x_forehead, y_forehead, frase)
-                
-                func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks)
-
-                cv2.putText(image, frase, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.putText(image, "Se você aceita o uso da sua imagem para nosso Mosaico, pressione espaço!", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)            
+            for i in range(3):
+                if i > idx:
+                    face_info[i] = None
+            
+            # Desenhe as informações dos rostos na imagem
+            for info in face_info:
+                if info:
+                    func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
+                    cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, 1, info['color'], 2, cv2.LINE_AA)
         else:
-            face_detected = True
+            face_detected = False
+            face_info = [None, None, None]
 
         cv2.imshow('MediaPipe FaceMesh', image)
         
         key = cv2.waitKey(5) & 0xFF
         if key == 27:
             break
-        elif key == 32 and not face_detected:  # Código da tecla de espaço
-            # Recorte a área do rosto
-            cont = func.get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont)
-            images, resized_image = func.make_mosaico(images=images, resized_images=resized_image)
 
 cap.release()
