@@ -43,8 +43,14 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * Desenvolver o redimensionamento das frases com o deslocamento do rosto em Z (aumentar quando se afastar para conseguir ler);
 * ~~Mudar a frase com o deslocamento em Z;~~
 * Fazer um mosaico com os rostos;
-* O rosto precisa ser salvo automaticamente;
-* novo programa para gerar o mosaico
-* mudar a cor da frase (semaforo)
-* aumentar o tamanho da frase quando se afastar
-* 
+* ~~O rosto precisa ser salvo automaticamente;~~
+* novo programa para gerar o mosaico;
+* ~~mudar a cor da frase (semáforo);~~
+* aumentar o tamanho da frase quando se afastar;
+* Possibilitar que 3 rostos interajam ao mesmo tempo;
+* Tamanho inicial estático pro mosaico;
+* Atualizar o mosaico com um filtro que distorce a imagem;
+* Suporte para 360?;
+* Testes;
+* Corrigir o problema de um rosto que é identificado muito próximo de uma das bordas e gera um problema para a captura (não tem a medida do queixo, então o resultado da conta é um noneType e dá erro na execução);
+
