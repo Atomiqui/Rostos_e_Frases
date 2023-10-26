@@ -49,21 +49,22 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
     return phrase, color
 
 
-def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont=0):
-    x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
-    x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
-    face_roi = image_copy[y1:y2, x1:x2]
+def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
+    if cont is not None:
+        x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
+        x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
+        face_roi = image_copy[y1:y2, x1:x2]
 
-    # Salve a área recortada do rosto como uma imagem separada
-    if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
-        image_folder = "images"
+        # Salve a área recortada do rosto como uma imagem separada
+        if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
+            image_folder = "images"
 
-        if not os.path.exists(image_folder):
-            os.makedirs(image_folder)
-            
-        cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
+            if not os.path.exists(image_folder):
+                os.makedirs(image_folder)
+                
+            cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
 
-        return cont + 1
+            return cont + 1
     
 def make_mosaico(output_file="mosaico.png", mosaic_size=(1024, 1024), images = [], resized_images = []):
     image_folder = "images"
@@ -137,3 +138,18 @@ def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_land
         landmark_drawing_spec=None,         
         connection_drawing_spec=mp_drawing_styles
         .get_default_face_mesh_iris_connections_style())
+    
+def is_face_near_edge(x_forehead, y_forehead, x_chin, y_chin, image_shape, margin=50):
+    # Obtém as dimensões da imagem
+    height, width = image_shape
+
+    # Verifica se o rosto está muito próximo da borda da imagem com a margem especificada
+    if (
+        x_forehead < margin
+        or y_forehead < margin
+        or width - x_chin < margin
+        or height - y_chin < margin
+    ):
+        return True
+    else:
+        return False

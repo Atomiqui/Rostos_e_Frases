@@ -83,7 +83,9 @@ with mp_face_mesh.FaceMesh(
                     'landmarks': face_landmarks
                 }
 
-                if face_detected:
+                # Verifique a proximidade da borda da imagem antes de imprimir o rosto
+                if face_detected and not func.is_face_near_edge(x_forehead, y_forehead, x_chin, y_chin, image.shape[:2], margin=50) and face_info[idx] is not None:
+                #if face_detected and face_info[idx] is not None:
                     cont = func.get_rosto(face_info[idx]['distance'], face_info[idx]['x_forehead'], face_info[idx]['y_forehead'], face_info[idx]['x_chin'], face_info[idx]['y_chin'], image_copy, cont)
                     face_detected = False
 
