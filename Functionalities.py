@@ -114,73 +114,19 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
 
     return phrase, color
 
-
 def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
-    if cont is not None:
-        x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
-        x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
-        face_roi = image_copy[y1:y2, x1:x2]
+    x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
+    x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
+    face_roi = image_copy[y1:y2, x1:x2]
 
-        # Salve a área recortada do rosto como uma imagem separada
-        if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
-            image_folder = "images"
+    # Salve a área recortada do rosto como uma imagem separada
+    if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
+        image_folder = "images"
 
-            if not os.path.exists(image_folder):
-                os.makedirs(image_folder)
-                
-            cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
-
-            return cont + 1
-    
-def make_mosaico(output_file="mosaico.png", mosaic_size=(1024, 1024), images = [], resized_images = []):
-    image_folder = "images"
-
-    # Verifique se a pasta de imagens existe
-    if not os.path.exists(image_folder):
-        print("Pasta de imagens não encontrada.")
-        return
-
-    # Obtenha uma lista de todas as imagens na pasta
-    file = os.listdir(image_folder)[-1]
-    if file.endswith(".png"):
-        image_path = os.path.join(image_folder, file)
-        image = cv2.imread(image_path)
-        if image is not None:
-            images.append(image)
-
-    # Verifique se há pelo menos uma imagem
-    if not images:
-        print("Nenhuma imagem encontrada na pasta.")
-        return
-    
-    # Redimensione todas as imagens para o mesmo tamanho
-    image = images[-1]
-    resized_image = cv2.resize(image, mosaic_size)
-    resized_images.append(resized_image)
-
-    # Crie um mosaico com as imagens
-    rows, cols = int(len(resized_images) ** 0.5), int(len(resized_images) ** 0.5)
-    mosaic = None
-
-    for r in range(rows):
-        row_mosaic = None
-        for c in range(cols):
-            idx = r * cols + c
-            if idx < len(resized_images):
-                if row_mosaic is None:
-                    row_mosaic = resized_images[idx]
-                else:
-                    row_mosaic = cv2.hconcat([row_mosaic, resized_images[idx]])
-        if mosaic is None:
-            mosaic = row_mosaic
-        else:
-            mosaic = cv2.vconcat([mosaic, row_mosaic])
-
-    # Salve o mosaico resultante em um arquivo de saída
-    cv2.imwrite(output_file, mosaic)
-    # print(f"Mosaico gerado e salvo em {output_file}")
-
-    return images, resized_images
+        if not os.path.exists(image_folder):
+            os.makedirs(image_folder)
+            
+        cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
 
 def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):
     mp_drawing.draw_landmarks(
