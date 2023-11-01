@@ -14,9 +14,11 @@ def get_positions(face_landmarks, image):
 
     return distance, x_forehead, y_forehead, x_chin, y_chin
 
-def set_text_position(x_forehead, y_forehead, frase):
+def set_text_position(x_forehead, y_forehead, frase, font_size):
+    text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
+
     # ToDo: Definir qual string vai ficar aqui. A string deve ser centralizada no rosto
-    x = int(x_forehead) - frase.__len__() * 8
+    x = int(x_forehead - text_width // 2)
     y = int(y_forehead) - 50
 
     return x, y
@@ -103,16 +105,19 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
     ]
 
     if distance > marca_prox:
-        phrase = phrases[i][0]
+        frase = phrases[i][0]
         color = colors[0]  # Verde
+        font_size = 1.1  # Tamanho padrão da fonte
     elif distance < marca_prox and distance > marca_dist:
-        phrase = phrases[i][1]
+        frase = phrases[i][1]
         color = colors[1]  # Amarelo
+        font_size = 1.3  # Tamanho médio da fonte
     elif distance < marca_dist:
-        phrase = phrases[i][2]
+        frase = phrases[i][2]
         color = colors[2]  # Vermelho
+        font_size = 1.5  # Tamanho grande da fonte
 
-    return phrase, color
+    return frase, color, font_size
 
 def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
     x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)

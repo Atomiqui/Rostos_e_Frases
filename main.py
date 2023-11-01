@@ -25,8 +25,8 @@ face_info = [None, None, None]
 with mp_face_mesh.FaceMesh(
     max_num_faces=3,
     refine_landmarks=True,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as face_mesh:
+    min_detection_confidence=0.6,
+    min_tracking_confidence=0.4) as face_mesh:
 
     cv2.namedWindow('MediaPipe FaceMesh', cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty('MediaPipe FaceMesh', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -61,8 +61,8 @@ with mp_face_mesh.FaceMesh(
                 else:
                     i = face_info[idx]['i']
                 
-                frase, color = func.get_text_and_color(distance, i, marca_prox, marca_dist)
-                x, y = func.set_text_position(x_forehead, y_forehead, frase)
+                frase, color, font_size = func.get_text_and_color(distance, i, marca_prox, marca_dist)
+                x, y = func.set_text_position(x_forehead, y_forehead, frase, font_size)
 
                 # Armazene as informações do rosto atual
                 face_info[idx] = {
@@ -73,6 +73,7 @@ with mp_face_mesh.FaceMesh(
                     'y_chin': y_chin,
                     'frase': frase,
                     'color': color,
+                    'font_size': font_size,
                     'x_text': x,
                     'y_text': y,
                     'i': i,
@@ -92,7 +93,7 @@ with mp_face_mesh.FaceMesh(
             for info in face_info:
                 if info:
                     func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
-                    cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, 1, info['color'], 2, cv2.LINE_AA)
+                    cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, info['font_size'], info['color'], 2, cv2.LINE_AA)
         else:
             face_detected = False
             face_info = [None, None, None]
