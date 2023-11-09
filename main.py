@@ -55,11 +55,15 @@ with mp_face_mesh.FaceMesh(
             for idx, face_landmarks in enumerate(resultados):
                 distance, x_forehead, y_forehead, x_chin, y_chin = func.get_positions(face_landmarks, image)
 
-                if face_info[idx] == None:
+                try:
+                    if face_info[idx] == None:
+                        i = random.randint(0, 20)
+                        face_detected = True
+                    else:
+                        i = face_info[idx]['i']
+                except:
                     i = random.randint(0, 20)
                     face_detected = True
-                else:
-                    i = face_info[idx]['i']
                 
                 frase, color, font_size = func.get_text_and_color(distance, i, marca_prox, marca_dist)
                 x, y = func.set_text_position(x_forehead, y_forehead, frase, font_size)
