@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, UnidentifiedImageError
 import cv2
 import numpy as np
 
-pasta = r'P:\GitHub\Labinter\Rostos_e_Frases\images'
+pasta = r'.\images'
 
 def redimensionar_imagem(imagem, tamanho):
     return imagem.resize((tamanho, tamanho))
@@ -47,7 +47,7 @@ while True:
         mosaico_array = cv2.cvtColor(np.array(mosaico), cv2.COLOR_RGB2BGR)
 
         # Salve o mosaico em P:\GitHub\Labinter\Rostos_e_Frases\
-        caminho_salvamento = r'P:\GitHub\Labinter\Rostos_e_Frases\mosaico.png'
+        caminho_salvamento = r'.\mosaico.png'
         cv2.imwrite(caminho_salvamento, mosaico_array)
 
     else:
