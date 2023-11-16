@@ -115,8 +115,6 @@ with mp_face_mesh.FaceMesh(
 
         except Exception as e:
             print(f"Erro ao processar imagem: {e}")
-        finally:
-            cap.release()
-            cv2.destroyAllWindows()
+        
 cap.release()
 cv2.destroyAllWindows()
