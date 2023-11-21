@@ -53,4 +53,8 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * ~~Suporte para 360?;~~
 * Testes;
 * ~~Corrigir o problema de um rosto que é identificado muito próximo de uma das bordas e gera um problema para a captura (não tem a medida do queixo, então o resultado da conta é um noneType e dá erro na execução);~~
+* Trocar a cor do fundo do mosaico para preto;
+* Ver como identificar quando a pessoa sorrir, piscar, etc;
+* Possibilitar que o programa seja desligado e ligado novamente;
+   * Salvar o cont localmente.
 
