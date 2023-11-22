@@ -25,7 +25,8 @@ i = random.randint(0, 2)
 face_detected = False
 image_folder = "images"
 image_copy = None
-cont = 0
+with open("cont.txt", "r") as file:
+    cont = int(file.read().strip())
 face_info = [None, None, None]
 
 with mp_face_mesh.FaceMesh(
@@ -118,3 +119,5 @@ with mp_face_mesh.FaceMesh(
         
 cap.release()
 cv2.destroyAllWindows()
+with open("cont.txt", "w") as file:
+    file.write(str(cont))

@@ -13,7 +13,7 @@ def criar_mosaico(imagens, tamanho_imagem):
     num_imagens = len(imagens)
     largura_mosaico = int(num_imagens ** 0.5) + 1  # Calcula o número de colunas (e também de linhas) para formar um mosaico quadrado
     altura_mosaico = largura_mosaico
-    mosaico = Image.new("RGB", (largura_mosaico * tamanho_imagem, altura_mosaico * tamanho_imagem), "white")
+    mosaico = Image.new("RGB", (largura_mosaico * tamanho_imagem, altura_mosaico * tamanho_imagem), "black")
 
     for i, imagem in enumerate(imagens):
         x = i % largura_mosaico
