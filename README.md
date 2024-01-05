@@ -57,4 +57,7 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * Ver como identificar quando a pessoa sorrir, piscar, etc;
 * ~~Possibilitar que o programa seja desligado e ligado novamente;~~
    * ~~Salvar o cont localmente.~~
-
+* Aumentar o tamanho das letras vermelhas;
+* Aumentar a distância para detectar o rosto;
+* Mosaico do formato da máscara;
+* 
