@@ -59,3 +59,6 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
    * ~~Salvar o cont localmente.~~
 * a biblioteca tem limite de memória?
 * o computador está com pouco espaço?
+* Aumentar o tamanho das letras vermelhas;
+* Aumentar a distância para detectar o rosto;
+* Mosaico do formato da máscara;
