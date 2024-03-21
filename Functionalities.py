@@ -4,57 +4,66 @@ import random
 import mediapipe as mp
 
 face_info = [None, None, None]
+face_detected = False
 
 # "constantes"
 SMALL_DISTANCE = 120
 BIG_DISTANCE = 70
 
-def main_loop(cap, face_mesh):
-    # Variáveis para a criação da mascara.
-    mp_drawing = mp.solutions.drawing_utils
-    mp_drawing_styles = mp.solutions.drawing_styles
-
+def main_loop(cap, face_mesh, cont):
     while cap.isOpened():
         try:
             success, image = cap.read()
 
             if not success:
-                break
-
+                raise Exception("Não foi possível abrir a câmera.")
+            
             image.flags.writeable = False
             results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             image.flags.writeable = True
 
             if results.multi_face_landmarks:
-                image_copy = image.copy()
+                #resultados = reversed(results.multi_face_landmarks)
 
-                resultados = reversed(results.multi_face_landmarks)
-                
-                for idx, face_landmarks in enumerate(resultados):
-                    handle_faces(idx, face_landmarks, image)
-
-                for i in range(3):
-                    if i > idx:
-                        face_info[i] = None
-
-                for info in face_info:
-                    if info:
-                        func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
-                        cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, info['font_size'], info['color'], 2, cv2.LINE_AA)
+                handle_faces(reversed(results.multi_face_landmarks), image, cont)
             else:
                 face_detected = False
                 face_info = [None, None, None]
 
             cv2.imshow('MediaPipe FaceMesh', image)
             
+            # Caso seja pressionado "esc", encerra a execução do programa.
             key = cv2.waitKey(5) & 0xFF
             if key == 27:
                 break
-
         except Exception as e:
-            print(f"Erro ao processar imagem: {e}")
+            print(f"Erro: {e}")
 
-def handle_faces(idx, face_landmarks, image):
+# Gerencia os rostos que estão sendo identificados
+# para cada um ser tratado individualmente
+def handle_faces(multi_face_landmarks, image, cont):
+    image_copy = image.copy()
+    # Variáveis para a criação da mascara.
+    mp_drawing = mp.solutions.drawing_utils
+    mp_face_mesh = mp.solutions.face_mesh
+    mp_drawing_styles = mp.solutions.drawing_styles
+
+    for idx, face_landmarks in enumerate(multi_face_landmarks):
+        handle_face(idx, face_landmarks, image, image_copy, cont)
+
+    for i in range(3):
+        if i > idx:
+            face_info[i] = None
+
+    for info in face_info:
+        if info:
+            make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
+            cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, info['font_size'], info['color'], 2, cv2.LINE_AA)
+
+# Constrói o vetor de informações necessárias sobre o rosto
+# Salva um print do rosto que foi detectado.
+# OBS: Recebe um rosto por vez.
+def handle_face(idx, face_landmarks, image, image_copy, cont):
     distance, x_forehead, y_forehead = get_positions(face_landmarks, image)
 
     try:
@@ -85,7 +94,7 @@ def handle_faces(idx, face_landmarks, image):
     }
 
     if face_detected and cont is not None:
-        print_image(face_info[idx]['distance'], face_info[idx]['x_forehead'], face_info[idx]['y_forehead'], face_info[idx]['x_chin'], face_info[idx]['y_chin'], image_copy, cont)
+        print_image(image_copy, cont)
         cont += 1
         face_detected = False
 
@@ -104,6 +113,9 @@ def get_positions(face_landmarks, image):
 
     return distance, x_forehead, y_forehead
 
+# Retorna uma frase aleatória
+# E a cor e o tamanho da fonte com base na distância que o rosto está.
+# TODO: phrases é um vetor que ocupa muito espaço, armazenar de uma maneira diferente.
 def get_text_and_color(distance, i, marca_prox, marca_dist):
     colors = [(0, 255, 0), (0, 255, 255), (0, 0, 255)]  # Verde, Amarelo, Vermelho
     phrases = [
@@ -186,29 +198,31 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
     ]
 
     if distance > marca_prox:
-        frase = phrases[i][0]
+        frase = phrases[i][0] # ...[0] indica a versão amigável da frase
         color = colors[0]  # Verde
-        font_size = 1.1  # Tamanho padrão da fonte
+        font_size = 1.15  # Tamanho padrão da fonte
     elif distance < marca_prox and distance > marca_dist:
-        frase = phrases[i][1]
+        frase = phrases[i][1] # ...[1] indica a versão razoável da frase
         color = colors[1]  # Amarelo
-        font_size = 1.3  # Tamanho médio da fonte
+        font_size = 1.4  # Tamanho médio da fonte
     elif distance < marca_dist:
-        frase = phrases[i][2]
+        frase = phrases[i][2] # ...[2] indica a versão agressiva da frase
         color = colors[2]  # Vermelho
-        font_size = 1.5  # Tamanho grande da fonte
+        font_size = 1.8  # Tamanho grande da fonte
 
     return frase, color, font_size
 
+# Com base nas coordenadas (x, y) do ponto da testa e do tamanho da frase
+# define a posição na tela.
 def set_text_position(x_forehead, y_forehead, frase, font_size):
     text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
 
-    # ToDo: Definir qual string vai ficar aqui. A string deve ser centralizada no rosto
     x = int(x_forehead - text_width // 2)
     y = int(y_forehead) - 50
 
     return x, y
 
+# "Tira um print" da tela e salva no formato imageX.png
 def print_image(image_copy, cont):
     folder_name = "images"
     file_name = '.\images\image' + str(cont) + '.png'
@@ -218,6 +232,7 @@ def print_image(image_copy, cont):
         
     cv2.imwrite(file_name, image_copy)
 
+# Utiliza os landmarks para desenhar a máscara
 def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):
     mp_drawing.draw_landmarks(
         image=image,
