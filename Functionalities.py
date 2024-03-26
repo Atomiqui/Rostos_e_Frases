@@ -1,96 +1,6 @@
-import os
 import cv2
-import random
-import mediapipe as mp
+import os
 
-face_info = [None, None, None]
-
-# "constantes"
-SMALL_DISTANCE = 120
-BIG_DISTANCE = 70
-
-def main_loop(cap, face_mesh):
-    # Variáveis para a criação da mascara.
-    mp_drawing = mp.solutions.drawing_utils
-    mp_drawing_styles = mp.solutions.drawing_styles
-
-    while cap.isOpened():
-        try:
-            success, image = cap.read()
-
-            if not success:
-                break
-
-            image.flags.writeable = False
-            results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            image.flags.writeable = True
-
-            if results.multi_face_landmarks:
-                image_copy = image.copy()
-
-                resultados = reversed(results.multi_face_landmarks)
-                
-                for idx, face_landmarks in enumerate(resultados):
-                    handle_faces(idx, face_landmarks, image)
-
-                for i in range(3):
-                    if i > idx:
-                        face_info[i] = None
-
-                for info in face_info:
-                    if info:
-                        func.make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
-                        cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, info['font_size'], info['color'], 2, cv2.LINE_AA)
-            else:
-                face_detected = False
-                face_info = [None, None, None]
-
-            cv2.imshow('MediaPipe FaceMesh', image)
-            
-            key = cv2.waitKey(5) & 0xFF
-            if key == 27:
-                break
-
-        except Exception as e:
-            print(f"Erro ao processar imagem: {e}")
-
-def handle_faces(idx, face_landmarks, image):
-    distance, x_forehead, y_forehead = get_positions(face_landmarks, image)
-
-    try:
-        if face_info[idx] == None:
-            i = random.randint(0, 20)
-            face_detected = True
-        else:
-            i = face_info[idx]['i']
-    except:
-        i = random.randint(0, 20)
-        face_detected = True
-    
-    frase, color, font_size = get_text_and_color(distance, i, SMALL_DISTANCE, BIG_DISTANCE)
-    x, y = set_text_position(x_forehead, y_forehead, frase, font_size)
-
-    # Armazene as informações do rosto atual
-    face_info[idx] = {
-        'distance': distance,
-        'x_forehead': x_forehead,
-        'y_forehead': y_forehead,
-        'frase': frase,
-        'color': color,
-        'font_size': font_size,
-        'x_text': x,
-        'y_text': y,
-        'i': i,
-        'landmarks': face_landmarks
-    }
-
-    if face_detected and cont is not None:
-        print_image(face_info[idx]['distance'], face_info[idx]['x_forehead'], face_info[idx]['y_forehead'], face_info[idx]['x_chin'], face_info[idx]['y_chin'], image_copy, cont)
-        cont += 1
-        face_detected = False
-
-# Retorna o calcula da distância entre a testa e o queixo para saber se o rosto está próximo ou distante.
-# Retorna também as coordenadas (x, y) da testa para posicionar a frase
 def get_positions(face_landmarks, image):
     pt_forehead = 10  # Ponto da testa
     pt_chin = 152  # Ponto do queixo
@@ -102,7 +12,16 @@ def get_positions(face_landmarks, image):
 
     distance = ((x_forehead - x_chin)**2 + (y_forehead - y_chin)**2)**0.5
 
-    return distance, x_forehead, y_forehead
+    return distance, x_forehead, y_forehead, x_chin, y_chin
+
+def set_text_position(x_forehead, y_forehead, frase, font_size):
+    text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
+
+    # ToDo: Definir qual string vai ficar aqui. A string deve ser centralizada no rosto
+    x = int(x_forehead - text_width // 2)
+    y = int(y_forehead) - 50
+
+    return x, y
 
 def get_text_and_color(distance, i, marca_prox, marca_dist):
     colors = [(0, 255, 0), (0, 255, 255), (0, 0, 255)]  # Verde, Amarelo, Vermelho
@@ -200,23 +119,19 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
 
     return frase, color, font_size
 
-def set_text_position(x_forehead, y_forehead, frase, font_size):
-    text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
+def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
+    x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
+    x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
+    face_roi = image_copy[y1:y2, x1:x2]
 
-    # ToDo: Definir qual string vai ficar aqui. A string deve ser centralizada no rosto
-    x = int(x_forehead - text_width // 2)
-    y = int(y_forehead) - 50
+    # Salve a área recortada do rosto como uma imagem separada
+    if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
+        image_folder = "images"
 
-    return x, y
-
-def print_image(image_copy, cont):
-    folder_name = "images"
-    file_name = '.\images\image' + str(cont) + '.png'
-
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        
-    cv2.imwrite(file_name, image_copy)
+        if not os.path.exists(image_folder):
+            os.makedirs(image_folder)
+            
+        cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
 
 def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):
     mp_drawing.draw_landmarks(
