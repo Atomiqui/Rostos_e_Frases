@@ -1,3 +1,4 @@
+import os
 import cv2
 import os
 
@@ -12,17 +13,11 @@ def get_positions(face_landmarks, image):
 
     distance = ((x_forehead - x_chin)**2 + (y_forehead - y_chin)**2)**0.5
 
-    return distance, x_forehead, y_forehead, x_chin, y_chin
+    return distance, x_forehead, y_forehead
 
-def set_text_position(x_forehead, y_forehead, frase, font_size):
-    text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
-
-    # ToDo: Definir qual string vai ficar aqui. A string deve ser centralizada no rosto
-    x = int(x_forehead - text_width // 2)
-    y = int(y_forehead) - 50
-
-    return x, y
-
+# Retorna uma frase aleatória
+# E a cor e o tamanho da fonte com base na distância que o rosto está.
+# TODO: phrases é um vetor que ocupa muito espaço, armazenar de uma maneira diferente.
 def get_text_and_color(distance, i, marca_prox, marca_dist):
     colors = [(0, 255, 0), (0, 255, 255), (0, 0, 255)]  # Verde, Amarelo, Vermelho
     phrases = [
@@ -105,34 +100,41 @@ def get_text_and_color(distance, i, marca_prox, marca_dist):
     ]
 
     if distance > marca_prox:
-        frase = phrases[i][0]
+        frase = phrases[i][0] # ...[0] indica a versão amigável da frase
         color = colors[0]  # Verde
-        font_size = 1.1  # Tamanho padrão da fonte
+        font_size = 1.15  # Tamanho padrão da fonte
     elif distance < marca_prox and distance > marca_dist:
-        frase = phrases[i][1]
+        frase = phrases[i][1] # ...[1] indica a versão razoável da frase
         color = colors[1]  # Amarelo
-        font_size = 1.3  # Tamanho médio da fonte
+        font_size = 1.4  # Tamanho médio da fonte
     elif distance < marca_dist:
-        frase = phrases[i][2]
+        frase = phrases[i][2] # ...[2] indica a versão agressiva da frase
         color = colors[2]  # Vermelho
-        font_size = 1.5  # Tamanho grande da fonte
+        font_size = 1.8  # Tamanho grande da fonte
 
     return frase, color, font_size
 
-def get_rosto(distance, x_forehead, y_forehead, x_chin, y_chin, image_copy, cont):
-    x1, y1 = int(x_forehead - distance), int(y_forehead - distance/2)
-    x2, y2 = int(x_chin + distance), int(y_chin + distance/2)
-    face_roi = image_copy[y1:y2, x1:x2]
+# Com base nas coordenadas (x, y) do ponto da testa e do tamanho da frase
+# define a posição na tela.
+def set_text_position(x_forehead, y_forehead, frase, font_size):
+    text_width, _ = cv2.getTextSize(frase, cv2.FONT_HERSHEY_SIMPLEX, font_size, 2)[0]
 
-    # Salve a área recortada do rosto como uma imagem separada
-    if face_roi.shape[0] > 0 and face_roi.shape[1] > 0:
-        image_folder = "images"
+    x = int(x_forehead - text_width // 2)
+    y = int(y_forehead) - 50
 
-        if not os.path.exists(image_folder):
-            os.makedirs(image_folder)
-            
-        cv2.imwrite('.\images\image' + str(cont) + '.png', face_roi)
+    return x, y
 
+# "Tira um print" da tela e salva no formato imageX.png
+def print_image(image_copy, cont):
+    folder_name = "images"
+    file_name = '.\images\image' + str(cont) + '.png'
+
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+        
+    cv2.imwrite(file_name, image_copy)
+
+# Utiliza os landmarks para desenhar a máscara
 def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):
     mp_drawing.draw_landmarks(
         image=image,
