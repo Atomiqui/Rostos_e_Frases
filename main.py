@@ -7,7 +7,6 @@ mp_face_mesh = func.mp.solutions.face_mesh
 try:
     cap = cv2.VideoCapture(0)
     if cap.isOpened():
-        # TODO: atribuir outros valores para largura e altura.
         cap.set(3, 4096)  # Largura da captura
         cap.set(4, 4096)  # Altura da captura
     else:
