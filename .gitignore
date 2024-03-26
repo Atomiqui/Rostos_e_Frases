@@ -4,3 +4,4 @@ cont.txt
 /__pycache__
 __pycache__/Functionalities.cpython-311.pyc
 *.txt
+*.pyc
