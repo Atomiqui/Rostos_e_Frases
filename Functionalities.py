@@ -98,7 +98,7 @@ def handle_face(idx, face_landmarks, image, image_copy, cont):
         cont += 1
         face_detected = False
 
-# Retorna o calcula da distância entre a testa e o queixo para saber se o rosto está próximo ou distante.
+# Retorna o cálculo da distância entre a testa e o queixo para saber se o rosto está próximo ou distante.
 # Retorna também as coordenadas (x, y) da testa para posicionar a frase
 def get_positions(face_landmarks, image):
     pt_forehead = 10  # Ponto da testa
