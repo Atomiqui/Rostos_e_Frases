@@ -11,6 +11,9 @@ SMALL_DISTANCE = 120
 BIG_DISTANCE = 70
 
 def main_loop(cap, face_mesh, cont):
+    global face_info
+    global face_detected
+
     while cap.isOpened():
         try:
             success, image = cap.read()
@@ -25,7 +28,7 @@ def main_loop(cap, face_mesh, cont):
             if results.multi_face_landmarks:
                 #resultados = reversed(results.multi_face_landmarks)
 
-                handle_faces(reversed(results.multi_face_landmarks), image, cont)
+                cont = handle_faces(reversed(results.multi_face_landmarks), image, cont)
             else:
                 face_detected = False
                 face_info = [None, None, None]
@@ -38,18 +41,21 @@ def main_loop(cap, face_mesh, cont):
                 break
         except Exception as e:
             print(f"Erro: {e}")
+    return cont
 
 # Gerencia os rostos que estão sendo identificados
 # para cada um ser tratado individualmente
 def handle_faces(multi_face_landmarks, image, cont):
+    global face_info
     image_copy = image.copy()
+
     # Variáveis para a criação da mascara.
     mp_drawing = mp.solutions.drawing_utils
     mp_face_mesh = mp.solutions.face_mesh
     mp_drawing_styles = mp.solutions.drawing_styles
 
     for idx, face_landmarks in enumerate(multi_face_landmarks):
-        handle_face(idx, face_landmarks, image, image_copy, cont)
+        cont = handle_face(idx, face_landmarks, image, image_copy, cont)
 
     for i in range(3):
         if i > idx:
@@ -60,10 +66,14 @@ def handle_faces(multi_face_landmarks, image, cont):
             make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, info['landmarks'])
             cv2.putText(image, info['frase'], (info['x_text'], info['y_text']), cv2.FONT_HERSHEY_SIMPLEX, info['font_size'], info['color'], 2, cv2.LINE_AA)
 
+    return cont
+
 # Constrói o vetor de informações necessárias sobre o rosto
 # Salva um print do rosto que foi detectado.
 # OBS: Recebe um rosto por vez.
 def handle_face(idx, face_landmarks, image, image_copy, cont):
+    global face_info
+    global face_detected
     distance, x_forehead, y_forehead = get_positions(face_landmarks, image)
 
     try:
@@ -97,6 +107,8 @@ def handle_face(idx, face_landmarks, image, image_copy, cont):
         print_image(image_copy, cont)
         cont += 1
         face_detected = False
+
+    return cont
 
 # Retorna o cálculo da distância entre a testa e o queixo para saber se o rosto está próximo ou distante.
 # Retorna também as coordenadas (x, y) da testa para posicionar a frase

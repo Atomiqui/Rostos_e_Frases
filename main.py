@@ -27,7 +27,7 @@ with mp_face_mesh.FaceMesh(
     cv2.namedWindow('MediaPipe FaceMesh', cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty('MediaPipe FaceMesh', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-    func.main_loop(cap, face_mesh, cont)
+    cont = func.main_loop(cap, face_mesh, cont)
         
 cap.release()
 cv2.destroyAllWindows()
