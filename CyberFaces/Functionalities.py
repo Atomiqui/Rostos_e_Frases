@@ -1,5 +1,6 @@
 import os
 import cv2
+import ast
 import random
 import mediapipe as mp
 
@@ -10,6 +11,7 @@ face_detected = False
 SMALL_DISTANCE = 120
 BIG_DISTANCE = 70
 
+# Salvar a imagem de captura de a cada 10 rostos.
 def main_loop(cap, face_mesh, cont):
     global face_info
     global face_detected
@@ -74,16 +76,16 @@ def handle_faces(multi_face_landmarks, image, cont):
 def handle_face(idx, face_landmarks, image, image_copy, cont):
     global face_info
     global face_detected
-    distance, x_forehead, y_forehead = get_positions(face_landmarks, image)
+    distance, x_forehead, y_forehead, coordenadas = get_positions(face_landmarks, image)
 
     try:
         if face_info[idx] == None:
-            i = random.randint(0, 20)
+            i = random.randint(0, 74)
             face_detected = True
         else:
             i = face_info[idx]['i']
     except:
-        i = random.randint(0, 20)
+        i = random.randint(0, 74)
         face_detected = True
     
     frase, color, font_size = get_text_and_color(distance, i, SMALL_DISTANCE, BIG_DISTANCE)
@@ -91,20 +93,19 @@ def handle_face(idx, face_landmarks, image, image_copy, cont):
 
     # Armazene as informações do rosto atual
     face_info[idx] = {
-        'distance': distance,
-        'x_forehead': x_forehead,
-        'y_forehead': y_forehead,
         'frase': frase,
         'color': color,
         'font_size': font_size,
         'x_text': x,
         'y_text': y,
         'i': i,
-        'landmarks': face_landmarks
+        'landmarks': face_landmarks,
+        'coordenadas': coordenadas
     }
 
     if face_detected and cont is not None:
         print_image(image_copy, cont)
+        save_coordenadas(coordenadas, cont)
         cont += 1
         face_detected = False
 
@@ -123,7 +124,22 @@ def get_positions(face_landmarks, image):
 
     distance = ((x_forehead - x_chin)**2 + (y_forehead - y_chin)**2)**0.5
 
-    return distance, x_forehead, y_forehead
+    pontos = [
+        103, 67, 109, 10, 338, 297, 332, 284, 251, 389, 
+        356, 454, 323, 401, 361, 435, 288, 397, 365, 379, 
+        378, 400, 377, 152, 148, 176, 149, 150, 136, 172,
+        58, 132, 93, 234, 127, 162, 21, 54
+    ]
+
+    lista_coordenadas = []
+
+    for p in pontos:
+        x = face_landmarks.landmark[p].x * image.shape[1]
+        y = face_landmarks.landmark[p].y * image.shape[0]
+
+        lista_coordenadas.append((x, y))
+
+    return distance, x_forehead, y_forehead, lista_coordenadas
 
 # Retorna uma frase aleatória
 # E a cor e o tamanho da fonte com base na distância que o rosto está.
@@ -237,12 +253,31 @@ def set_text_position(x_forehead, y_forehead, frase, font_size):
 # "Tira um print" da tela e salva no formato imageX.png
 def print_image(image_copy, cont):
     folder_name = "images"
-    file_name = '.\images\image' + str(cont) + '.png'
+    image_path = '.\images\image' + str(cont) + '.png'
 
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
         
-    cv2.imwrite(file_name, image_copy)
+    cv2.imwrite(image_path, image_copy)
+
+def save_coordenadas(coordenadas, cont):
+    folder_name = "coordenadas"
+    file_path = '.\coordenadas\coordenadas.txt'
+
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
+    with open(file_path, 'a') as file:
+        linha = f"{cont}:{coordenadas}\n"
+        file.write(linha)
+
+def load_coordenadas(file_path):
+    coordenadas = []
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            coordenadas = file.readlines()
+
+    return coordenadas
 
 # Utiliza os landmarks para desenhar a máscara
 def make_landmarks(mp_drawing, mp_face_mesh, mp_drawing_styles, image, face_landmarks):

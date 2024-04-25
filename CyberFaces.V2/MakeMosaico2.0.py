@@ -19,6 +19,7 @@ def cortar_imagem_com_pontos(imagem, pontos):
 
     imagem_cortada.paste(imagem, mask=imagem_cortada)
 
+    #xy = random.randint(200, 800)
     return imagem_cortada.resize((350, 350))
 
 def criar_mosaico(imagens, tamanho_imagem):

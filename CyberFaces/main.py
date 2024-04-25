@@ -3,7 +3,6 @@ import Functionalities as func
 
 mp_face_mesh = func.mp.solutions.face_mesh
 
-
 # Tentativa de acesso à camera com tratamento se der erro (except)
 try:
     cap = cv2.VideoCapture(0)
