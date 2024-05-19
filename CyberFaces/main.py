@@ -15,8 +15,14 @@ try:
 except Exception as e:
     print(f"Erro ao abrir a câmera: {e}")
 
-with open("cont.txt", "r") as file:
-    cont = int(file.read().strip())
+if not os.path.exists("cont.txt"):
+    os.makedirs("cont.txt")
+    with open("cont.txt", "w") as file:
+        file.write("0")
+    cont = 0
+else:
+    with open("cont.txt", "r") as file:
+        cont = int(file.read().strip())
     
 with mp_face_mesh.FaceMesh(
     max_num_faces=3,
