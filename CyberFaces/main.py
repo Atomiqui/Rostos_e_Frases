@@ -1,4 +1,5 @@
 import cv2
+import os
 import Functionalities as func
 
 mp_face_mesh = func.mp.solutions.face_mesh
@@ -15,13 +16,13 @@ try:
 except Exception as e:
     print(f"Erro ao abrir a câmera: {e}")
 
-if not os.path.exists("cont.txt"):
-    os.makedirs("cont.txt")
-    with open("cont.txt", "w") as file:
+cont_file = 'cont.txt'
+if not os.path.exists(cont_file):
+    with open(cont_file, "w") as file:
         file.write("0")
     cont = 0
 else:
-    with open("cont.txt", "r") as file:
+    with open(cont_file, "r") as file:
         cont = int(file.read().strip())
     
 with mp_face_mesh.FaceMesh(
