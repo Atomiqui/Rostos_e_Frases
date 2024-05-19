@@ -253,19 +253,21 @@ def set_text_position(x_forehead, y_forehead, frase, font_size):
 # "Tira um print" da tela e salva no formato imageX.png
 def print_image(image_copy, cont):
     folder_name = "images"
-    image_path = '.\images\image' + str(cont) + '.png'
+    folder_path = os.path.join(".", folder_name)
+    image_path = os.path.join(folder_path, f"image{cont}.png")
 
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
         
     cv2.imwrite(image_path, image_copy)
 
 def save_coordenadas(coordenadas, cont):
     folder_name = "coordenadas"
-    file_path = '.\coordenadas\coordenadas.txt'
+    folder_path = os.path.join(".", folder_name)
+    file_path = os.path.join(folder_path, "coordenadas.txt")
 
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
     with open(file_path, 'a') as file:
         linha = f"{cont}:{coordenadas}\n"
@@ -276,6 +278,8 @@ def load_coordenadas(file_path):
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:
             coordenadas = file.readlines()
+    else:
+        print("Arquivo de coordenadas não encontrado.")
 
     return coordenadas
 
