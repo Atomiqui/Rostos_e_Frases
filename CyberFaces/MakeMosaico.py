@@ -52,9 +52,9 @@ def criar_mosaico(imagens, tamanhos_imagens):
 
 
 #TODO: Salvar um mosaico a cada x rostos. 10
-images_folder = r'.\images'
-coordenadas_folder = r'.\coordenadas'
-coordenadas_file = r'.\coordenadas\coordenadas.txt'
+images_folder = r'./images'
+coordenadas_folder = r'./coordenadas'
+coordenadas_file = r'./coordenadas/coordenadas.txt'
 
 len_images_folder = 0
 
@@ -97,7 +97,7 @@ while True:
         mosaico = cv2.cvtColor(np.array(mosaico), cv2.COLOR_RGB2BGR)
 
         # Salve o mosaico no diretório atual
-        mosaico_path = r'.\mosaico.png'
+        mosaico_path = r'./mosaico.png'
         cv2.imwrite(mosaico_path, mosaico)
     else:
         print(f'Problema com as pastas de arquivos, verifique se os diretórios estão corretos.')
