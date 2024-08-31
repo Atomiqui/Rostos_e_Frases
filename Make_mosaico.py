@@ -46,7 +46,7 @@ while True:
         # Converta o mosaico para uma matriz numpy (formato que o OpenCV pode lidar)
         mosaico_array = cv2.cvtColor(np.array(mosaico), cv2.COLOR_RGB2BGR)
 
-        # Salve o mosaico em P:\GitHub\Labinter\Rostos_e_Frases\
+        # Salve o mosaico em Rostos_e_Frases\
         caminho_salvamento = r'.\mosaico.png'
         cv2.imwrite(caminho_salvamento, mosaico_array)
 
