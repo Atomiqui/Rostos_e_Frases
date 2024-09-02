@@ -63,3 +63,5 @@ Agora estamos dando seguimento ao projeto usando [**MediaPipe**](https://develop
 * ~~Aumentar a distância para detectar o rosto;~~
 * ~~Mosaico do formato da máscara;~~
 * Fazer um doc com instruções sobre os executáveis.
+
+[Clique aqui](https://drive.google.com/drive/folders/1d3CQzrhAsaI9pEJZFFhKo2wG0RuS9wGP?usp=sharing) para acessar os executáveis.
