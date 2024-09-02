@@ -1,0 +1,14 @@
+datas=[
+        ('cont.txt', '.'), 
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_landmark\\face_landmark_front_cpu.binarypb', 'mediapipe/modules/face_landmark'), 
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_landmark\\face_landmark_with_attention.tflite', 'mediapipe/modules/face_landmark'), 
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_landmark\\face_landmark.tflite', 'mediapipe/modules/face_landmark'),
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_detection\\face_detection_full_range_cpu.binarypb', 'mediapipe/modules/face_detection'),
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_detection\\face_detection_full_range_sparse.tflite', 'mediapipe/modules/face_detection'),
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_detection\\face_detection_short_range_cpu.binarypb', 'mediapipe/modules/face_detection'),
+        ('..\\Lib\\site-packages\\mediapipe\\modules\\face_detection\\face_detection_short_range.tflite', 'mediapipe/modules/face_detection'),
+    ],
+
+--hidden-import mediapipe
+
+pyinstaller -F -w --hidden-import mediapipe main.py
